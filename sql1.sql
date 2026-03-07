@@ -1,3 +1,13 @@
+USE master;
+GO
+ALTER DATABASE metro_db 
+SET SINGLE_USER 
+WITH ROLLBACK IMMEDIATE;
+GO
+DROP DATABASE metro_db;
+GO
+
+
 create database metro_db
 GO
 
@@ -45,9 +55,8 @@ foreign key (station_id) references Station(station_id)
 create table Passenger (
 passenger_id int identity(1,1) primary key,
 name varchar(100),
-password varchar(100),
-contact_info varchar(200),
-nid varchar(30)
+password varchar(MAX),
+nid varchar(30) UNIQUE
 )
 
 create table Ticket (
