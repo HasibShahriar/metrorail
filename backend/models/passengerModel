@@ -1,0 +1,21 @@
+const { sql, pool } = require("../config/db")
+
+const findUserByNid = async (nid)=>{
+    const conn = await pool
+    const result = await conn.request()
+    .input("nid",sql.VarChar,nid)
+    .query("SELECT * FROM Passenger WHERE nid=@nid")
+
+    return result.recordset[0]
+}
+
+const createUser = async (name,nid,password)=>{
+    const conn = await pool
+    await conn.request()
+    .input("name",sql.VarChar,name)
+    .input("nid",sql.VarChar,nid)
+    .input("password",sql.VarChar,password)
+    .query("INSERT INTO Passenger (name,nid,password) VALUES (@name,@nid,@password)")
+}
+
+module.exports = { findUserByNid, createUser }
