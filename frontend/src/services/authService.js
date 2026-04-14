@@ -11,3 +11,11 @@ export const loginUser = (data)=>{
 export const getProfile = ()=>{
     return API.get("auth/profile")
 }
+
+export const updateProfile = (data)=>{
+    return API.put("/auth/profile",data)
+}
+
+export const deleteProfile = ()=>{
+    return API.delete("/auth/profile")
+}

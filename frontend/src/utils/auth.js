@@ -1,11 +1,21 @@
 export const setToken = (token)=>{
-    localStorage.setItem("token",token)
+    sessionStorage.setItem("token",token)
 }
 
 export const getToken = ()=>{
-    return localStorage.getItem("token")
+    return sessionStorage.getItem("token")
+}
+
+export const getUserInfo = ()=>{
+    const userInfo = sessionStorage.getItem("userInfo")
+    return userInfo ? JSON.parse(userInfo) : null
+}
+
+export const setUserInfo = (user)=>{
+    sessionStorage.setItem("userInfo", JSON.stringify(user))
 }
 
 export const logout = ()=>{
-    localStorage.removeItem("token")
+    sessionStorage.removeItem("token")
+    sessionStorage.removeItem("userInfo")
 }
