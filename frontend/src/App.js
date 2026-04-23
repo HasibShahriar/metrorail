@@ -4,6 +4,8 @@ import Landing from "./pages/Landing"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Dashboard from "./pages/Dashboard"
+import Profile from "./pages/Profile"
+import { SocketProvider } from "./contexts/SocketContext"
 
 function App() {
 
@@ -11,17 +13,23 @@ function App() {
 
     <BrowserRouter>
 
-      <Routes>
+      <SocketProvider>
 
-        <Route path="/" element={<Landing />} />
+        <Routes>
 
-        <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Landing />} />
 
-        <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
 
-        <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/register" element={<Register />} />
 
-      </Routes>
+          <Route path="/dashboard" element={<Dashboard />} />
+
+          <Route path="/profile" element={<Profile />} />
+
+        </Routes>
+
+      </SocketProvider>
 
     </BrowserRouter>
 

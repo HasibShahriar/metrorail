@@ -1,21 +1,83 @@
-const { sql, pool } = require("../config/db")
+const { sql, pool } = require("../config/db");
 
-const findUserByNid = async (nid)=>{
-    const conn = await pool
-    const result = await conn.request()
-    .input("nid",sql.VarChar,nid)
-    .query("SELECT * FROM Passenger WHERE nid=@nid")
+const findUserByNid = async (nid) => {
+  const conn = await pool;
+  const result = await conn
+    .request()
+    .input("nid", sql.VarChar, nid)
+    .query("SELECT * FROM Passenger WHERE nid=@nid");
 
-    return result.recordset[0]
-}
+  return result.recordset[0];
+};
 
-const createUser = async (name,nid,password)=>{
-    const conn = await pool
-    await conn.request()
-    .input("name",sql.VarChar,name)
-    .input("nid",sql.VarChar,nid)
-    .input("password",sql.VarChar,password)
-    .query("INSERT INTO Passenger (name,nid,password) VALUES (@name,@nid,@password)")
-}
+const createUser = async (name, nid, password) => {
+  const conn = await pool;
+  await conn
+    .request()
+    .input("name", sql.VarChar, name)
+    .input("nid", sql.VarChar, nid)
+    .input("password", sql.VarChar, password)
+    .query(
+      "INSERT INTO Passenger (name,nid,password) VALUES (@name,@nid,@password)",
+    );
+};
 
-module.exports = { findUserByNid, createUser }
+const updateUser = async (name, password, nid) => {
+  const conn = await pool;
+  await conn
+    .request()
+    .input("name", sql.VarChar, name)
+    .input("password", sql.VarChar, password)
+    .input("nid", sql.VarChar, nid)
+    .query(
+      "UPDATE Passenger SET name=@name, password=@password WHERE nid=@nid",
+    );
+};
+
+const deleteUser = async (nid) => {
+  const conn = await pool;
+
+  try {
+    const userResult = await conn
+      .request()
+      .input("nid", sql.VarChar, nid)
+      .query("SELECT passenger_id FROM Passenger WHERE nid = @nid");
+
+    if (userResult.recordset.length === 0) {
+      return { deleted: false, reason: "User not found" };
+    }
+
+    const passengerId = userResult.recordset[0].passenger_id;
+
+    await conn
+      .request()
+      .input("passengerId", sql.Int, passengerId)
+      .query("DELETE FROM Fine WHERE passenger_id = @passengerId");
+
+    await conn
+      .request()
+      .input("passengerId", sql.Int, passengerId)
+      .query(
+        "DELETE FROM Recharge_Transaction WHERE passenger_id = @passengerId",
+      );
+
+    await conn
+      .request()
+      .input("passengerId", sql.Int, passengerId)
+      .query(
+        "DELETE FROM Passenger_movement WHERE passenger_id = @passengerId",
+      );
+
+    await conn
+      .request()
+      .input("nid", sql.VarChar, nid)
+      .query("DELETE FROM Passenger WHERE nid = @nid");
+
+    return { deleted: true };
+  } catch (err) {
+    console.error("DeleteUser error:", err.message);
+    throw new Error(err.message);
+  }
+};
+
+module.exports = { findUserByNid, createUser, updateUser, deleteUser };
